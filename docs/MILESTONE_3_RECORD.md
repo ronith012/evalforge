@@ -1,6 +1,8 @@
 # Milestone 3 Completion Record — Dataset loading
 
-Status: **Implemented and checked locally on macOS. Awaiting owner approval before Milestone 4.**
+Status: **Approved by the owner on 2026-10-27.** Implemented and checked locally on macOS.
+
+Accepted decisions: (1) a zero-byte `.json` file is invalid, while a zero-byte `.jsonl` file is valid and empty; (2) the nesting limit counts the record object itself; (3) duplicate object keys are rejected; (4) JSON array errors are reported by element index.
 Date of checks: 2026-10-27. Python 3.11.0, 3.12.13, 3.13.5 (macOS, arm64).
 
 ## Scope delivered (DEVELOPMENT_TASKS 22–25)

@@ -1,6 +1,8 @@
 # Milestone 1 Completion Record — Project foundation
 
-Status: **Implemented locally on macOS. Awaiting owner approval before Milestone 2.**
+Status: **Approved by the owner on 2026-10-27.** Implemented and checked locally on macOS.
+
+Approval decisions carried forward: the year placeholder stays until initial publication (OD-01); the PyPI name conflict is recorded (OD-10); uv is re-locked with 0.13.6 before Milestone 5 (see IMPLEMENTATION_PLAN §8).
 Date of checks: 2026-10-27. Environment: macOS (Darwin, arm64), local uv 0.11.10, Python 3.11.0, 3.12.13, 3.13.
 
 ## Scope delivered

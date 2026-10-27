@@ -317,6 +317,18 @@ the milestone's completion record before the next milestone starts.
 - **Verification evidence:** Test output on the matrix.
 - **Required approval:** Yes, both to start and to complete.
 
+## 4a. Progress and approvals
+
+| Milestone | Status | Approval | Record | Committed |
+|---|---|---|---|---|
+| M1 Project foundation | Complete | Approved 2026-10-27 | docs/MILESTONE_1_RECORD.md | Yes (4a144a1) |
+| M2 Data models and validation | Complete | Approved 2026-10-27, deviations accepted | docs/MILESTONE_2_RECORD.md | Yes (4a144a1) |
+| M3 Dataset loading | Complete | Approved 2026-10-27, decisions 1–4 accepted | docs/MILESTONE_3_RECORD.md | Yes (4a144a1) |
+| M4 Target interface | Complete | Approved 2026-10-27, decisions 1–3 accepted | docs/MILESTONE_4_RECORD.md | **No** (pending instruction) |
+| M5 onward | Not started | — | — | — |
+
+Test status at M4 approval: 194 tests pass on Python 3.11, 3.12, and 3.13 (macOS). Lint and strict type checks pass.
+
 ## 5. Milestone completion record (template)
 
 ```
@@ -352,3 +364,143 @@ See [OPEN_DECISIONS](OPEN_DECISIONS.md).
 - **Provisional:** OD-10 (package name). Usable for local scaffolding; publication is blocked until gate G-2.
 - **Gates:** G-1 before installing any dependency; G-2 before any publication.
 - **Open before M5:** OD-07. **Before M7:** OD-11, OD-12, OD-21, OD-22, OD-27, OD-30. **Before M9:** OD-09, OD-13, OD-28. **Before M10:** OD-08.
+
+
+## 8. Next steps (from Milestone 5)
+
+Each step has an owner decision, a deliverable, and a check. Work proceeds in this order. Each
+milestone still needs its completion record and your approval before the next one starts.
+
+### 8.1 Preconditions and carry-over obligations
+
+| ID | Step | Deliverable | Check | Owner action |
+|---|---|---|---|---|
+| PRE-1 | Re-lock the project with uv 0.13.6, the verified version | Updated `uv.lock`; version recorded in the record | `uv lock` succeeds; tests pass | Confirm |
+| PRE-2 | Decide OD-07 (JSON Schema evaluator) | OPEN_DECISIONS updated | — | Decide (recommended: not in MVP) |
+| CO-1 | **Redact exception messages before any persistence.** Binding before Milestone 7 writes results. | Redaction applied to `ErrorObject` and evaluator messages; test TST-RD-003 | Planted-secret test fails before, passes after | Confirm the redaction rules (SECURITY §4.6) |
+| CO-2 | Serialise the records that Milestone 7 persists | JSON round-trip for case, evaluator, and target results | Serialise-and-compare test | — |
+| CO-3 | Build the models deferred from Milestone 2 | Dataset fingerprint (M3/M7), manifest and summary (M7), comparison and finding (M9/M10) | Model tests per milestone | — |
+
+### 8.2 Milestone 5 — Deterministic evaluators and registry
+
+1. Define the evaluator protocol: `name`, `version`, `requires_expected`, and a pure `evaluate(case, output, duration_ms)` (TRD-080, TRD-081).
+2. Implement the six built-in evaluators: `exact_match`, `normalized_text`, `json_structure`, `required_fields` (dotted-path lookup), `rule_based` (contains, not-contains, regex, length; the first failing rule is reported), and `latency`.
+3. Apply the `NO_EXPECTED` skip before an evaluator runs (TRD-083).
+4. Load custom evaluators from `module:attribute` references. Check `interface_version`. Map an exception to `EVALUATOR_EXCEPTION` and a malformed result to `EVALUATOR_RESULT_INVALID` (TRD-084).
+5. Fingerprints: built-ins hash their type and parameters; custom evaluators hash the module, qualified name, version, and the SHA-256 of the defining source file (TRD-085).
+6. A registry maps configured types to factories. It consumes the `EvaluatorSettings` produced by Milestone 2.
+7. Runtime limit on regex input length of 1 MiB (TRD-091).
+8. Tests: TST-EV-001 to TST-EV-029, including the rule that no built-in returns INCONCLUSIVE (TST-EV-029).
+9. Checks: lint, strict type check, tests on all three Python versions.
+- **Decision needed:** OD-07.
+
+### 8.3 Milestone 6 — Evaluation runner
+
+1. Run the cases sequentially, in dataset order, using `invoke_target` from Milestone 4.
+2. Apply each evaluator with the skip rules, then aggregate with `aggregate_case_status`.
+3. Best-effort timeouts in a worker thread. Count threads that may still be alive (`threads_possibly_running`). Warn in the summary (TRD-070 to TRD-075). OD-06 applies.
+4. Interruption: on `KeyboardInterrupt`, finish the current case within a grace period of 5 seconds, then mark the run `ABORTED` (TRD-103).
+5. Engine error boundary: an unexpected exception becomes `ENGINE_ERROR` with exit 4 (TRD-104).
+6. Produce an in-memory run object. Persistence waits for Milestone 7.
+7. Tests: TST-TG-004, TST-TG-009, TST-TG-012, and the aggregation table T1 to T10.
+- **Decisions needed:** none new. OD-13 is needed by Milestone 9.
+
+### 8.4 Milestone 7 — Normalisation and persistence
+
+1. Create run directories with a UUIDv4 name. Refuse to reuse an existing directory (TRD-110, TRD-111).
+2. Exclusive lock file per run (TRD-121).
+3. Write `cases.jsonl` by appending and flushing one record at a time. Write the manifest and summary atomically through a temporary file and `os.replace` (TRD-112, TRD-113).
+4. Record `cases_sha256` and `summary_sha256` in the manifest (TRD-114; ARTIFACT_INTEGRITY §2).
+5. Apply `io_mode` (`full`, `hashes`, `none`) and the redaction module (DATA_HANDLING §3, §7). **Completes CO-1.**
+6. Never store tracebacks. Truncate and redact exception messages (DATA_HANDLING §4).
+7. Store a configuration snapshot with secret-like values removed. Store only the minimal environment metadata (DATA_HANDLING §5, §6).
+8. Statistics: Wilson interval and nearest-rank percentiles. Check the vectors independently (TEST_STRATEGY §4.6). This also re-derives the worked example.
+9. `Run.load` with integrity checks. Schema major-version checks (PRD-NF-009).
+10. Windows file-replace and locking tests (TST-XP-004 and related).
+11. Tests: TST-PS-101 to TST-PS-109, TST-IN-001 to TST-IN-004, TST-IO-001 to TST-IO-009, TST-RD-001 to TST-RD-006.
+- **Decisions needed before M7:** OD-11 (run root), OD-12 (final `io_mode` default), OD-21 (exception redaction), OD-22 (permissions), OD-27 (configuration may disable redaction), OD-30 (platform string).
+
+### 8.5 Milestone 8 — Reporting
+
+1. Terminal output with control-character and bidirectional-override sanitisation (SECURITY §6).
+2. JSON reports with `schema_version`. Hand-written JSON Schema files, validated by tests (closes the PRD-F-025 gap).
+3. Golden-output fixtures for run, inspect, and report output.
+4. Footer wording. Owner decision on OD-18.
+5. Banned-claims scan over user-facing strings (TST-DOC-003).
+- **Decision needed:** OD-18.
+
+### 8.6 Milestone 9 — Run comparison
+
+1. Compatibility checks: dataset hash, evaluator fingerprints, schema version, run status, and integrity (ARTIFACT_INTEGRITY §6.1).
+2. Case categories: regressed, recovered, unchanged, changed, missing, new, and changed_input (EVALUATION_METHODOLOGY §5).
+3. Overrides as explicit arguments with a banner, `compatibility.overrides`, and a `COMPARISON_OVERRIDDEN` warning (TRD-136 to TRD-137).
+4. `--strict` mode (TRD-138).
+5. Byte-identical output for identical inputs (TST-CM-016).
+6. Tests: TST-CM-001 to TST-CM-022.
+- **Decisions needed:** OD-09 (confirmed as refuse by default), OD-13, OD-28.
+
+### 8.7 Milestone 10 — Regression detection
+
+1. Thresholds from the `[regression]` table (TRD §9.1).
+2. Finding codes and golden messages (TRD §9.2).
+3. Infrastructure errors are never reported as `CASE_REGRESSED_TO_FAIL` (TST-CM-012).
+4. Tests: TST-CM-009 to TST-CM-015.
+- **Decision needed:** OD-08.
+
+### 8.8 Milestone 11 — CLI and Python API
+
+1. `argparse` commands from CLI_SPECIFICATION §3: `config validate`, `dataset validate`, `run`, `inspect`, `compare`, `report export`.
+2. Exit codes 0 to 5 with the precedence rules (CLI §1.4).
+3. Public API with `__all__`, matching API_DESIGN §2.
+4. Parity tests: CLI and API produce identical results for identical inputs.
+5. Show dataset warnings (for example symbolic links) in the CLI output.
+- **Decisions needed:** OD-25, OD-26.
+
+### 8.9 Milestone 12 — SQLite (deferred)
+
+No work scheduled. Revisit only with a new owner approval (OD-05).
+
+### 8.10 Milestone 13 — Security hardening
+
+1. Verification matrix: each threat in THREAT_MODEL §3 mapped to a passing test or an approved residual risk.
+2. Static checks for `eval`, `exec`, `pickle`, unsafe YAML loading, and `shell=True` (TST-SEC-003).
+3. Network-isolation test (TST-SEC-004).
+4. Dependency audit. Verify the audit tool before installing it, as for G-1.
+5. Regex review (SECURITY §7).
+6. Written reassessment of process isolation (OD-06). No isolation code in this milestone.
+7. Residual risks RR-01 to RR-08 presented for written acceptance.
+
+### 8.11 Milestone 14 — Integration and end-to-end tests
+
+1. Quick start from a clean environment (TST-E2E-001).
+2. Seeded regression pair with an expected findings manifest (TST-E2E-002).
+3. Traceability check that fails if any requirement is untested.
+4. Executable documentation: API_DESIGN and CLI examples (TST-DOC-001, TST-DOC-002).
+5. Link check (TST-DOC-005) and the integrity-scope check against the manifest writer (TST-DOC-007).
+
+### 8.12 Milestone 15 — Packaging and documentation
+
+1. Complete README, API reference, and CLI reference.
+2. Complete CI: the Python matrix on Linux, macOS, and Windows, plus mypy, lint, tests, audit, build, and the `dco` job (OD-31 requires the DCO job before external contributions).
+3. Example GitHub Actions workflow that uploads summaries only (OD-23).
+4. `CODE_OF_CONDUCT.md` (OD-17), `SECURITY.md` contact (OD-20), and a secret-scanning tool (OD-24). Verify the scanner's licence and status before adoption.
+5. Synthetic example datasets, each labelled as synthetic.
+6. CHANGELOG and `.gitignore` template.
+- **Decisions needed:** OD-17, OD-20, OD-23, OD-24, OD-32 (DCO enforcement method).
+
+### 8.13 Milestone 16 — Release readiness (no publication without approval)
+
+1. Complete the release checklist with evidence.
+2. Gate G-2: package-index and trademark checks for the distribution name, and a decision on the PyPI name conflict (OD-10). **Owner action required; the name is already used on PyPI.**
+3. Replace the copyright-year placeholder with the year of initial publication (OD-01).
+4. Record residual risks RR-01 to RR-08 as accepted.
+5. Release notes and a decision request. Stop until approved.
+
+### 8.14 Blockers outside the code
+
+| Item | Why it blocks | Owner action |
+|---|---|---|
+| A git remote and authority to push | The first CI run on Linux and Windows needs a remote | Provide a remote and authorise the push |
+| Choice of DCO enforcement method (OD-32) | Required before any external contribution | Choose the method |
+| Copyright-year placeholder convention | Needed for headers and NOTICE before any publication | Confirm the placeholder token approach |
+| Distribution name (OD-10) | Publication is blocked while `evalforge` is used on PyPI | Choose a distribution name and complete the checks |

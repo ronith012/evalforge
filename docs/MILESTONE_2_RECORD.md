@@ -1,6 +1,8 @@
 # Milestone 2 Completion Record — Data models and validation
 
-Status: **Implemented and checked locally on macOS. Awaiting owner approval before Milestone 3.**
+Status: **Approved by the owner on 2026-10-27, with the deviations below accepted.** Implemented and checked locally on macOS.
+
+Accepted: (1) the dataset, manifest, summary, comparison, and finding models are built in Milestones 3, 7, 9, and 10; (2) serialisation moves to Milestone 7; (3) `io_mode = "full"` is the development default (OD-12 remains open for the final decision).
 Date of checks: 2026-10-27. Python 3.11.0, 3.12.13, 3.13.5 (macOS, arm64).
 
 ## Scope delivered

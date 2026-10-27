@@ -1,0 +1,3 @@
+{"id": "payload-001", "input": {"text": "__import__('os').system('echo SHOULD-NOT-RUN')"}, "expected": {"text": "eval('1+1')"}}
+{"id": "payload-002", "input": {"text": "!!python/object/apply:os.system ['echo SHOULD-NOT-RUN']"}}
+{"id": "payload-003", "input": {"text": "import subprocess; subprocess.run(['echo', 'SHOULD-NOT-RUN'])"}, "metadata": {"note": "exec(open('/etc/passwd').read())"}}

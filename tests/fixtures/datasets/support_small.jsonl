@@ -1,0 +1,5 @@
+{"id": "greet-001", "input": {"message": "Hello"}, "expected": {"reply": "Hello! How can I help?"}, "tags": ["smoke"]}
+{"id": "refund-001", "input": {"question": "Can I get a refund after 30 days?"}, "expected": {"answer": "No, refunds are available within 30 days."}, "metadata": {"category": "refunds"}, "tags": ["smoke", "refunds"]}
+{"id": "order-002", "input": {"order_id": "A-1001"}, "expected": {"status": "shipped"}, "tags": ["orders"]}
+{"id": "no-expected-003", "input": {"question": "What is your name?"}}
+{"id": "null-expected-004", "input": {"question": "Is there a fee?"}, "expected": null}

@@ -1,0 +1,17 @@
+# Python build and environment
+__pycache__/
+*.py[cod]
+.venv/
+build/
+dist/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# EvalForge run artifacts may contain sensitive case content (DATA_HANDLING §9)
+.evalforge/
+
+# Local secrets and environment files
+.env
+.env.*

@@ -1,0 +1,49 @@
+# Copyright YEAR_OF_INITIAL_PUBLICATION Bodepudi Ronith
+# SPDX-License-Identifier: Apache-2.0
+#
+# Milestone 1 CI skeleton (TEST_STRATEGY §8). The DCO job and release jobs are added in M15.
+# Not yet executed on GitHub: no remote repository exists in this workspace.
+name: ci
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: test (${{ matrix.os }}, Python ${{ matrix.python }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python: ["3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.13.6"
+      - name: Install locked environment
+        run: uv sync --locked --python ${{ matrix.python }}
+      - name: Run tests
+        run: uv run --locked pytest
+
+  lint:
+    name: lint and type-check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.13.6"
+      - name: Install locked environment
+        run: uv sync --locked --python 3.12
+      - name: ruff check
+        run: uv run --locked ruff check .
+      - name: ruff format check
+        run: uv run --locked ruff format --check .
+      - name: mypy --strict (required gate, OD-15)
+        run: uv run --locked mypy --strict

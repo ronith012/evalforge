@@ -1,0 +1,58 @@
+[build-system]
+requires = ["hatchling==1.32.4"]
+build-backend = "hatchling.build"
+
+[project]
+# Provisional distribution name (OD-10). Publication is blocked until gate G-2 is complete;
+# the PyPI name "evalforge" is already in use (see docs/TOOLING_VERIFICATION.md).
+name = "evalforge"
+version = "0.0.0.dev0"
+description = "Open-source, model-agnostic framework for AI evaluation and regression testing (pre-alpha)."
+readme = "README.md"
+requires-python = ">=3.11,<3.14"
+license = "Apache-2.0"
+license-files = ["LICENSE", "NOTICE"]
+authors = [{ name = "Bodepudi Ronith" }]
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Typing :: Typed",
+]
+# Zero third-party runtime dependencies (TRD §3.2; OD-15).
+dependencies = []
+
+[dependency-groups]
+dev = [
+    "mypy>=2.4.0,<3",
+    "pytest>=9.1.1,<10",
+    "ruff>=0.17.3,<0.18",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/evalforge"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+# Import from src/ directly so tests do not depend on an editable install.
+pythonpath = ["src"]
+addopts = ["-ra", "--strict-markers"]
+
+[tool.ruff]
+# Lint and format Python sources only; Markdown code blocks in docs/ are illustrative.
+include = ["*.py", "*.pyi"]
+line-length = 100
+target-version = "py311"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+mypy_path = "src"
+files = ["src/evalforge", "tests"]

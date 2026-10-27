@@ -1,6 +1,6 @@
 # EvalForge — Development Tasks
 
-Status: **Milestone 1 implemented; completion record pending owner approval.** **Milestone 2 implemented; completion record in `docs/MILESTONE_2_RECORD.md`, pending owner approval.** **Milestone 3 implemented; completion record in `docs/MILESTONE_3_RECORD.md`, pending owner approval.** **Milestone 4 implemented (uncommitted); completion record in `docs/MILESTONE_4_RECORD.md`, pending owner approval.** Tasks are in priority order. Each milestone ends with a
+Status: **Milestone 1 implemented; completion record pending owner approval.** **Milestone 2 implemented; completion record in `docs/MILESTONE_2_RECORD.md`, pending owner approval.** **Milestone 3 implemented; completion record in `docs/MILESTONE_3_RECORD.md`, pending owner approval.** **Milestone 4 committed (1fc4789); completion record in `docs/MILESTONE_4_RECORD.md`.** **Milestone 5 implemented (uncommitted); completion record in `docs/MILESTONE_5_RECORD.md`. Approved by "proceed".** **Milestone 6 approved.** **Milestone 7 implemented (uncommitted); completion record in `docs/MILESTONE_7_RECORD.md`, pending owner approval.** Tasks are in priority order. Each milestone ends with a
 completion record and an owner approval before the next milestone starts (IMPLEMENTATION_PLAN §5).
 Effort figures are the plan's rough sizing, not commitments.
 

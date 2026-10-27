@@ -260,10 +260,16 @@ One JSON object per line in `cases.jsonl` (TRD-102). Dataset order.
 
 | Field | Type | Description |
 |---|---|---|
-| `status` | `"OK"` \| `"ERROR"` | Target execution status |
+| `status` | `"OK"` \| `"ERROR"` \| `"NOT_RUN"` | Target execution status. `NOT_RUN` means the target was never called because the case was excluded by selection (decision D-11; EXECUTION_PLAN §3). |
 | `error_code` | string or null | `TARGET_EXCEPTION`, `TARGET_TIMEOUT`, `TARGET_OUTPUT_INVALID`, or null |
 | `error` | Error object or null | Exception type and message, with message truncated to 500 characters, redacted when redaction is enabled (DATA_HANDLING §4). Tracebacks are never stored. |
-| `duration_ms` | number | Measured even on timeout (equals timeout value) |
+| `duration_ms` | number | Measured even on timeout (equals timeout value). Zero for `NOT_RUN`. |
+
+Rules for `status` (added with decision D-11):
+
+- `OK`: no `error_code` and no `error`.
+- `ERROR`: `error_code` is one of `TARGET_EXCEPTION`, `TARGET_TIMEOUT`, `TARGET_OUTPUT_INVALID`, or `TARGET_CRASHED`.
+- `NOT_RUN`: no `error_code`, no `error`, and `duration_ms` of zero. The case has no evaluator results. Its case status is `SKIPPED` with reason `USER_FILTER` (DATA_MODELS §9.1).
 
 Example (FAIL):
 

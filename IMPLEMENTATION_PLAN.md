@@ -325,7 +325,9 @@ the milestone's completion record before the next milestone starts.
 | M2 Data models and validation | Complete | Approved 2026-10-27, deviations accepted | docs/MILESTONE_2_RECORD.md | Yes (4a144a1) |
 | M3 Dataset loading | Complete | Approved 2026-10-27, decisions 1–4 accepted | docs/MILESTONE_3_RECORD.md | Yes (4a144a1) |
 | M4 Target interface | Complete | Approved 2026-10-27, decisions 1–3 accepted | docs/MILESTONE_4_RECORD.md | **No** (pending instruction) |
-| M5 onward | Not started | — | — | — |
+| M5 Deterministic evaluators and registry | Complete | Approved by "proceed" 2026-10-27; D-7 still open | docs/MILESTONE_5_RECORD.md | No |
+| M6 Evaluation runner | Complete | Approved 2026-10-27; D-11 and interruption decision confirmed | docs/MILESTONE_6_RECORD.md | No |
+| M7 Normalisation and persistence | Complete | Pending approval; six owner-decision defaults need confirming | docs/MILESTONE_7_RECORD.md | No |
 
 Test status at M4 approval: 194 tests pass on Python 3.11, 3.12, and 3.13 (macOS). Lint and strict type checks pass.
 
@@ -367,6 +369,8 @@ See [OPEN_DECISIONS](OPEN_DECISIONS.md).
 
 
 ## 8. Next steps (from Milestone 5)
+
+The detailed execution plan for Milestones 5 to 11 is in [docs/EXECUTION_PLAN_NEXT_MILESTONES.md](docs/EXECUTION_PLAN_NEXT_MILESTONES.md). The list below is the summary.
 
 Each step has an owner decision, a deliverable, and a check. Work proceeds in this order. Each
 milestone still needs its completion record and your approval before the next one starts.

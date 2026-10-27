@@ -192,17 +192,23 @@ class ErrorObject:
 class TargetResult:
     """Outcome of one target call (DATA_MODELS §7)."""
 
-    status: Literal["OK", "ERROR"]
+    status: Literal["OK", "ERROR", "NOT_RUN"]
     error_code: str | None
     error: ErrorObject | None
     duration_ms: float
 
     def __post_init__(self) -> None:
-        if self.status not in ("OK", "ERROR"):
-            raise ValidationError("must be 'OK' or 'ERROR'", field_name="status")
+        if self.status not in ("OK", "ERROR", "NOT_RUN"):
+            raise ValidationError("must be 'OK', 'ERROR', or 'NOT_RUN'", field_name="status")
         if not _is_number(self.duration_ms) or not float(self.duration_ms) >= 0.0:
             raise ValidationError("must be a non-negative finite number", field_name="duration_ms")
-        if self.status == "OK":
+        if self.status == "NOT_RUN":
+            # Decision D-6: the target was never called (case excluded by selection).
+            if self.error_code is not None or self.error is not None or self.duration_ms != 0.0:
+                raise ValidationError(
+                    "NOT_RUN results carry no error and no duration", field_name="status"
+                )
+        elif self.status == "OK":
             if self.error_code is not None or self.error is not None:
                 raise ValidationError("OK results carry no error", field_name="status")
         else:
@@ -279,6 +285,8 @@ def aggregate_case_status(
     6. Every evaluator SKIPPED: SKIPPED with the first skip reason.
     7. Otherwise: PASS.
     """
+    if target.status == "NOT_RUN":
+        return Status.SKIPPED, "USER_FILTER"
     if target.status == "ERROR":
         return Status.ERROR, target.error_code
     if not evaluators:
@@ -346,6 +354,10 @@ class CaseResult:
             )
         object.__setattr__(self, "evaluators", evaluators)
 
+        if self.target.status == "NOT_RUN" and evaluators:
+            raise ValidationError(
+                "a case that was not run has no evaluator results", field_name="evaluators"
+            )
         if self.target.status == "ERROR":
             for item in evaluators:
                 if item.status is not Status.SKIPPED or item.reason_code != "TARGET_ERROR":

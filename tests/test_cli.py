@@ -464,13 +464,13 @@ def test_unexpected_faults_exit_4_without_detail(
     project: Project, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
 ) -> None:
     def explode(path: str) -> None:
-        raise RuntimeError("secret-token-value")
+        raise RuntimeError("UNEXPECTED-DETAIL-MARKER")
 
     monkeypatch.setattr(api, "validate_dataset", explode)
     code, _, err = invoke(capsys, ["dataset", "validate", "dataset.jsonl"])
     assert code == 4
     assert "RuntimeError" in err
-    assert "secret-token-value" not in err
+    assert "UNEXPECTED-DETAIL-MARKER" not in err
 
 
 def test_version_exits_0(capsys: pytest.CaptureFixture[str]) -> None:

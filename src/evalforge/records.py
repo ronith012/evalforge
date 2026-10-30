@@ -10,11 +10,12 @@ value the target returned (ARTIFACT_INTEGRITY §2).
 from __future__ import annotations
 
 import platform
+import re
 import sys
 from collections import Counter
 from collections.abc import Mapping
 from dataclasses import replace
-from pathlib import Path
+from pathlib import Path, PurePosixPath, PureWindowsPath
 from typing import Final, cast
 
 from evalforge import __version__
@@ -46,15 +47,16 @@ def portable_path(path: str, base: Path | None) -> str:
     Paths inside the configuration directory are stored relative to it. Other absolute paths are
     replaced by ``<external>/<basename>``.
     """
-    candidate = Path(path)
-    if not candidate.is_absolute():
+    # Both POSIX and Windows absolute forms count, whatever the platform running the code.
+    if not (PurePosixPath(path).is_absolute() or PureWindowsPath(path).is_absolute()):
         return path
-    if base is not None:
+    if base is not None and Path(path).is_absolute():
         try:
-            return str(candidate.relative_to(base))
+            return str(Path(path).relative_to(base))
         except ValueError:
             pass
-    return f"<external>/{candidate.name}"
+    basename = re.split(r"[\\/]", path)[-1]
+    return f"<external>/{basename}"
 
 
 def prepare_for_storage(result: CaseResult, io_mode: str, redaction: bool) -> CaseResult:

@@ -8,4 +8,5 @@ useDefault = true
 
 [[allowlists]]
 description = "Threshold keys of the regression finding schema (DATA_MODELS §12), for example regression.max_pass_rate_drop. They are names, not secrets."
+regexTarget = "line"
 regexes = ['''"key": "regression\.[a-z_0-9]+"''']

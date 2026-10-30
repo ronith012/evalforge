@@ -347,8 +347,11 @@ def test_very_deep_nesting_is_rejected_without_recursion_error() -> None:
 
 
 def test_crlf_and_lf_line_endings_give_identical_cases() -> None:
-    lf = load_dataset(SMALL)
-    crlf = load_dataset(FIXTURES / "support_small_crlf.jsonl")
+    # The bytes are built here, not read from a checkout: git may convert line endings on Windows.
+    lf_bytes = SMALL.read_bytes().replace(b"\r\n", b"\n")
+    crlf_bytes = lf_bytes.replace(b"\n", b"\r\n")
+    lf = parse_dataset_bytes(lf_bytes, fmt="jsonl")
+    crlf = parse_dataset_bytes(crlf_bytes, fmt="jsonl")
     assert lf.cases == crlf.cases
     assert lf.canonical_sha256 == crlf.canonical_sha256
     assert lf.sha256 != crlf.sha256

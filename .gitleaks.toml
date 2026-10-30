@@ -1,0 +1,12 @@
+# Copyright YEAR_OF_INITIAL_PUBLICATION Bodepudi Ronith
+# SPDX-License-Identifier: Apache-2.0
+#
+# gitleaks configuration (OD-24). The default rules stay on. The allowlist below is narrow and reviewed.
+
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Threshold keys of the regression finding schema (DATA_MODELS §12), for example regression.max_pass_rate_drop. They are names, not secrets."
+regexTarget = "line"
+regexes = ['''"key": "regression\.[a-z_0-9]+"''']

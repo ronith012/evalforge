@@ -254,8 +254,8 @@ EvalForge therefore makes such edits visible in comparisons.
 - A regression report shows what changed on the chosen cases, not the cause.
 - Reports must include the sentence in the report footer: "EvalForge reports results
   of the configured evaluators on the provided cases. These results do not establish
-  that the system is safe, correct, or reliable in general." *(Exact wording to be
-  approved; OD-18.)*
+  that the system is safe, correct, or reliable in general." *(Wording approved by the
+  owner under OD-18.)*
 
 ## 13. Model-based evaluation (post-MVP design constraints)
 

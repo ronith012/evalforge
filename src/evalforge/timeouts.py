@@ -13,13 +13,13 @@ from __future__ import annotations
 import threading
 
 from evalforge.canon import JSONValue
-from evalforge.targets import Target, TargetInvocation, invoke_target
+from evalforge.targets import TargetInvocation, TargetProtocol, invoke_target
 
 
 class Worker:
     """Runs one target call in a daemon thread and keeps its outcome."""
 
-    def __init__(self, target: Target, case_input: JSONValue) -> None:
+    def __init__(self, target: TargetProtocol, case_input: JSONValue) -> None:
         self._target = target
         self._input = case_input
         self.invocation: TargetInvocation | None = None

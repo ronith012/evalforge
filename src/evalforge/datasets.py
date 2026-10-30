@@ -23,6 +23,7 @@ Hashes (TRD-050, TRD-051):
 from __future__ import annotations
 
 import json
+from collections.abc import Iterable
 from dataclasses import dataclass, field, replace
 from pathlib import Path
 from typing import Final, NoReturn, cast
@@ -65,6 +66,43 @@ class Dataset:
     @property
     def case_count(self) -> int:
         return len(self.cases)
+
+    @classmethod
+    def load(cls, path: str | Path) -> Dataset:
+        """Read and validate a dataset file (see ``load_dataset``)."""
+        return load_dataset(path)
+
+    @classmethod
+    def from_cases(cls, cases: Iterable[Case], *, source_label: str = "") -> Dataset:
+        """Build a dataset from in-memory cases, with the same ID rules and limits as file loading.
+
+        There is no raw file, so ``sha256`` is the hash of the canonical content. That differs
+        from a file hash and is documented (API_DESIGN §3).
+        """
+        items = tuple(cases)
+        if not all(isinstance(item, Case) for item in items):
+            raise _single_error("DATASET_INVALID", "every item must be a Case.", source_label)
+        if len(items) > limits.MAX_CASES:
+            raise _single_error(
+                "DATASET_LIMIT_EXCEEDED",
+                f"a dataset may hold at most {limits.MAX_CASES} cases.",
+                source_label,
+            )
+        seen: set[str] = set()
+        for item in items:
+            if item.id in seen:
+                raise _single_error(
+                    "DATASET_DUPLICATE_ID", f"case ID {item.id!r} is repeated.", source_label
+                )
+            seen.add(item.id)
+        digest = canonical_sha256([item.canonical_content() for item in items])
+        return cls(
+            format="inline",
+            sha256=digest,
+            canonical_sha256=digest,
+            cases=items,
+            source_label=source_label or "<inline>",
+        )
 
 
 class _Collector:

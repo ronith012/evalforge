@@ -1,0 +1,12 @@
+Run 3f2b8c1e-5a7d-4e9b-9c2a-1d0f6e7b8a90
+Status: COMPLETED
+Integrity: ok
+Dataset: datasets/support.jsonl (5 cases, canonical sha256:9999999999999999999999999999999999999999999999999999999999999999)
+Executed: 5   PASS 3   FAIL 1   ERROR 1   SKIPPED 0   INCONCLUSIVE 0
+Pass rate: 0.600 (95% interval 0.231–0.882; n = 5)
+Errors: TARGET_TIMEOUT (1)
+Failures by evaluator: exact (1)
+Latency ms: p50 380.1  p95 30000.0  max 30000.0
+Stored content: hashes only (no case content).
+
+EvalForge reports results of the configured evaluators on the provided cases. These results do not establish that the system is safe, correct, or reliable in general.

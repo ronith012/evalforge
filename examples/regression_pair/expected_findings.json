@@ -1,0 +1,7 @@
+{
+  "exit_status": "regression",
+  "findings": [
+    {"code": "CASE_REGRESSED_TO_FAIL", "severity": "error", "case_ids": ["greet-003"]},
+    {"code": "RATE_CHECK_SKIPPED", "severity": "warning", "case_ids": []}
+  ]
+}

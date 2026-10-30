@@ -1,0 +1,15 @@
+schema_version = "1.0"
+
+[run]
+io_mode = "full"
+
+[dataset]
+path = "dataset.jsonl"
+
+[target]
+callable = "support_bot:answer"
+name = "support-bot-synthetic"
+
+[[evaluators]]
+name = "exact"
+type = "exact_match"

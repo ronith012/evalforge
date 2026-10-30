@@ -81,3 +81,18 @@ Not run: Linux and Windows; the CI workflow.
 ## Requested approval
 
 Approve Milestone 5. Confirm PRE-2 (OD-07 not in MVP), decisions D-5 and D-7 to D-10, and whether to commit.
+
+## D-7 decision (recorded 2026-10-30)
+
+**Question.** Evaluators may be named by a class, but targets may not. The two rules differ.
+
+**Proposed resolution (owner to confirm).** Keep both rules and document the reason:
+
+- An evaluator class is instantiated once with no arguments. This matches the design in API_DESIGN §5, where the
+  evaluator carries its own name, version, and interface. An evaluator is not called with case input at construction.
+- A target class is refused. Calling a class with the case input would construct an object, not run the target. The
+  mistake is easy to make and hard to see in a report, so targets must be functions or instances.
+
+**Effect.** No code change. The behaviour in `evaluators/custom.py` and `targets.py` is unchanged. The API reference
+states both rules.
+

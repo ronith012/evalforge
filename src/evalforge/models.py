@@ -231,6 +231,39 @@ class EvaluatorResult:
     message: str
     details: Mapping[str, JSONValue] = field(default_factory=dict)
 
+    # Factories for custom evaluators (API_DESIGN §5). The name is replaced by the configured name
+    # when the evaluator is loaded, so the placeholder "custom" is never recorded.
+    @classmethod
+    def passed(
+        cls, message: str, details: Mapping[str, JSONValue] | None = None, *, name: str = "custom"
+    ) -> EvaluatorResult:
+        return cls(name, Status.PASS, 1.0, None, message, details or {})
+
+    @classmethod
+    def fail(
+        cls,
+        reason_code: str,
+        message: str,
+        details: Mapping[str, JSONValue] | None = None,
+        *,
+        name: str = "custom",
+    ) -> EvaluatorResult:
+        return cls(name, Status.FAIL, 0.0, reason_code, message, details or {})
+
+    @classmethod
+    def error(cls, reason_code: str, message: str, *, name: str = "custom") -> EvaluatorResult:
+        return cls(name, Status.ERROR, None, reason_code, message, {})
+
+    @classmethod
+    def inconclusive(
+        cls, reason_code: str, message: str, *, name: str = "custom"
+    ) -> EvaluatorResult:
+        return cls(name, Status.INCONCLUSIVE, None, reason_code, message, {})
+
+    @classmethod
+    def skipped(cls, reason_code: str, message: str, *, name: str = "custom") -> EvaluatorResult:
+        return cls(name, Status.SKIPPED, None, reason_code, message, {})
+
     def __post_init__(self) -> None:
         if not isinstance(self.name, str) or EVALUATOR_NAME_RE.fullmatch(self.name) is None:
             raise ValidationError("evaluator name pattern is invalid", field_name="name")

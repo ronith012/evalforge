@@ -48,28 +48,28 @@ Notes on approved items:
 | ID | Decision | Status | Current position | Blocks M1? | Needed by |
 |---|---|---|---|---|---|
 | OD-07 | JSON Schema evaluator in MVP | Open | Not in MVP; optional extra later | No | M5 |
-| OD-08 | Default regression thresholds | Open | Zero tolerance for new failures and errors; 0.0 rate drop; min 30 executed; missing-case policy fail | No | M10 |
-| OD-09 | Changed datasets and evaluators in comparisons | Open | Refuse by default; visible explicit overrides | No | M9 |
-| OD-11 | Default run root | Open | `.evalforge/runs/` beside the config file; gitignored | No | M7 |
-| OD-12 | Default `io_mode` | Open | `full` locally; `hashes` in the example CI workflow | No | M7 |
-| OD-13 | ERROR in pass-rate denominator; FAIL → ERROR gating | Open | ERROR counted; FAIL → ERROR is `changed`, not regression, unless configured | No | M9 |
+| OD-08 | Default regression thresholds | Approved 2026-10-30 (owner) | Zero tolerance for new failures and errors; 0.0 rate drop; min 30 executed; missing-case policy fail | No | M10 |
+| OD-09 | Changed datasets and evaluators in comparisons | **Approved (refuse by default)** | Refuse by default; visible explicit overrides | No | Done (M9) |
+| OD-11 | Default run root | Approved 2026-10-30 (owner) | `.evalforge/runs/` beside the config file; gitignored | No | M7 |
+| OD-12 | Default `io_mode` | Approved 2026-10-30 (owner) | `full` locally; `hashes` in the example CI workflow | No | M7 |
+| OD-13 | ERROR in pass-rate denominator; FAIL → ERROR gating | Approved 2026-10-30 (owner) | ERROR counted; FAIL → ERROR is `changed`, not regression, unless configured | No | M9 |
 | OD-14 | Model-based evaluators | Open | Defer past MVP | No | Post-MVP |
 | OD-16 | User research | Open | Small study before release; no figures assumed | No | M16 |
 | OD-17 | Governance: maintainers, code of conduct, release review | Open | Maintainer names needed; code of conduct text to be verified before inclusion | No | M15 |
-| OD-18 | Report footer wording | Open | Approve the draft in EVALUATION_METHODOLOGY §12 or amend it | No | M8 |
+| OD-18 | Report footer wording | **Approved 2026-10-27** | Footer text as in EVALUATION_METHODOLOGY §12 (footer.py) | No | Done (M8) |
 | OD-19 | CI annotations (SARIF etc.) | Open | Defer past MVP | No | Post-MVP |
 | OD-20 | Vulnerability reporting channel | Open | Private channel the owner controls. No address published. | No | M15 |
-| OD-21 | Redaction of exception messages | Open | Apply the heuristic; document misses | No | M7 |
-| OD-22 | Run-directory permissions | Open | Owner-only on POSIX; Windows ACLs documented | No | M7 |
+| OD-21 | Redaction of exception messages | Approved 2026-10-30 (owner) | Apply the heuristic; document misses | No | M7 |
+| OD-22 | Run-directory permissions | Approved 2026-10-30 (owner) | Owner-only on POSIX; Windows ACLs documented | No | M7 |
 | OD-23 | CI example uploads `cases.jsonl` | Open | No | No | M15 |
-| OD-24 | Secret-scanning tool | Open | Choose at M15 from permissive tools; not selected or verified | No | M15 |
-| OD-25 | Exit behaviour of `evalforge run` | Open | Exit 0 on completion unless `--fail-on` is given | No | M11 |
-| OD-26 | Exit code for `inspect` of an incomplete run | Open | Exit 0 with an "incomplete" line; `compare` refuses | No | M11 |
-| OD-27 | Config may disable redaction | Open | Allowed; recorded and warned | No | M7 |
-| OD-28 | Overrides in CI: `--strict` default or opt-in | Open | `--strict` opt-in; CI recipe recommends it | No | M9 |
+| OD-24 | Secret-scanning tool | Proposed 2026-10-30: gitleaks v8.30.1 (MIT, verified). Owner to confirm. | Choose at M15 from permissive tools; not selected or verified | No | M15 |
+| OD-25 | Exit behaviour of `evalforge run` | Approved 2026-10-30 (owner) | Exit 0 on completion unless `--fail-on` is given | No | M11 |
+| OD-26 | Exit code for `inspect` of an incomplete run | Approved 2026-10-30 (owner) | Exit 0 with an "incomplete" line; `compare` refuses | No | M11 |
+| OD-27 | Config may disable redaction | Approved 2026-10-30 (owner) | Allowed; recorded and warned | No | M7 |
+| OD-28 | Overrides in CI: `--strict` default or opt-in | Approved 2026-10-30 (owner) | `--strict` opt-in; CI recipe recommends it | No | M9 |
 | OD-29 | Manifest signing after MVP | Open | Defer; document external anchors | No | Post-MVP |
-| OD-30 | Store full platform string | Open | Do not store; store minimal environment set | No | M7 |
-| OD-32 | DCO enforcement method | **Open** | Approved requirement: automated enforcement before accepting external contributions (OD-31). Tool or method not chosen (for example a CI check or a hosted DCO check). | No | Before the first external contribution |
+| OD-30 | Store full platform string | Approved 2026-10-30 (owner) | Do not store; store minimal environment set | No | M7 |
+| OD-32 | DCO enforcement method | **Open.** Proposed method: `scripts/check_dco.py` in the CI `dco` job (Milestone 15). Owner to confirm. | Approved requirement: automated enforcement before accepting external contributions (OD-31). Tool or method not chosen (for example a CI check or a hosted DCO check). | No | Before the first external contribution |
 
 ## 3. Effect on Milestone 1
 
@@ -107,6 +107,9 @@ When a decision is made, change its status here, record the owner's wording, and
 document that cites its ID. Citing documents are listed in PLANNING_SUMMARY §10.
 
 ## 6. Analysis: alternatives, rationale, and consequences
+
+The rows below are alternatives that were considered. They are **not** the positions in §2 and §1. For example, the
+"exit 4" row for OD-26 is a rejected alternative; the approved position is exit 0 with an "incomplete" line.
 
 Retained from the revised planning review so the reasoning stays on record. For approved
 decisions, the alternatives are the ones the owner did not choose.

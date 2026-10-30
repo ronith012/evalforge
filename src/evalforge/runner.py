@@ -20,7 +20,7 @@ from __future__ import annotations
 
 import uuid
 from collections import Counter
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass, field
 from typing import Final, cast
 
@@ -39,7 +39,7 @@ from evalforge.models import (
     aggregate_case_status,
 )
 from evalforge.status import RunStatus, Status
-from evalforge.targets import Target, TargetInvocation
+from evalforge.targets import TargetInvocation, TargetProtocol
 
 MAX_TIMEOUT_SECONDS: Final = 3600.0
 COUNTED_STATUSES: Final = (
@@ -178,10 +178,29 @@ def _build_result(
     )
 
 
+def target_timeout(target: object, options: RunOptions) -> float:
+    """The timeout for one target (TRD-070).
+
+    A target's own ``timeout_seconds`` applies when it declares one; otherwise the run's timeout.
+    """
+    declared = getattr(target, "timeout_seconds", None)
+    if declared is None:
+        return options.timeout_seconds
+    if isinstance(declared, bool) or not isinstance(declared, int | float):
+        raise EvalForgeError("USAGE_ERROR", "a target's timeout_seconds must be a number.")
+    if not 0.0 < float(declared) <= MAX_TIMEOUT_SECONDS:
+        raise EvalForgeError(
+            "USAGE_ERROR",
+            "a target's timeout_seconds must be greater than 0 and at most "
+            f"{MAX_TIMEOUT_SECONDS:g}.",
+        )
+    return float(declared)
+
+
 def _execute(
     run_id: str,
     case: Case,
-    target: Target,
+    target: TargetProtocol,
     evaluators: Sequence[Evaluator],
     options: RunOptions,
     timed_out: list[timeouts.Worker],
@@ -192,11 +211,12 @@ def _execute(
     interruption came and the case did not finish within the grace period, ``KeyboardInterrupt`` is
     raised and the case is not recorded.
     """
+    timeout = target_timeout(target, options)
     worker = timeouts.Worker(target, case.input)
     worker.start()
     interrupted = False
     try:
-        finished = timeouts.wait_for(worker, options.timeout_seconds)
+        finished = timeouts.wait_for(worker, timeout)
     except KeyboardInterrupt:
         if not timeouts.wait_for(worker, options.grace_seconds):
             raise
@@ -204,7 +224,7 @@ def _execute(
         interrupted = True
     if not finished:
         timed_out.append(worker)
-        invocation = _timed_out(options.timeout_seconds * 1000.0)
+        invocation = _timed_out(timeout * 1000.0)
     else:
         if worker.error is not None:
             raise worker.error
@@ -216,11 +236,15 @@ def _execute(
 
 def run_cases(
     dataset: Dataset,
-    target: Target,
+    target: TargetProtocol,
     evaluators: Sequence[Evaluator],
     options: RunOptions | None = None,
+    on_case: Callable[[CaseResult], None] | None = None,
 ) -> RunOutcome:
-    """Run the selected cases of ``dataset`` against ``target`` and return the in-memory outcome."""
+    """Run the selected cases of ``dataset`` against ``target`` and return the in-memory outcome.
+
+    ``on_case`` is called with each recorded result, in dataset order, as soon as it is recorded.
+    """
     opts = options if options is not None else RunOptions()
     _check_selection(dataset, opts)
     run_id = str(uuid.uuid4())
@@ -237,6 +261,8 @@ def run_cases(
         try:
             result, interrupted = _execute(run_id, case, target, evaluators, opts, timed_out)
             results.append(result)
+            if on_case is not None:
+                on_case(result)
             if interrupted:
                 status = RunStatus.ABORTED
                 break

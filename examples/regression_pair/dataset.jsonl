@@ -1,0 +1,5 @@
+{"id": "refund-001", "input": {"question": "Can I get a refund after 30 days?"}, "expected": {"answer": "No, refunds are available within 30 days."}, "tags": ["synthetic", "refunds"]}
+{"id": "hours-002", "input": {"question": "When are you open?"}, "expected": {"answer": "We are open 9 to 5, Monday to Friday."}, "tags": ["synthetic", "hours"]}
+{"id": "greet-003", "input": {"question": "Hello"}, "expected": {"answer": "Hello, how can I help?"}, "tags": ["synthetic", "smoke"]}
+{"id": "order-004", "input": {"question": "Where is my order?"}, "expected": {"answer": "Please enter your order number to track it."}, "tags": ["synthetic", "orders"]}
+{"id": "reset-005", "input": {"question": "How do I reset my password?"}, "expected": {"answer": "Use the reset link on the sign-in page."}, "tags": ["synthetic", "smoke"]}

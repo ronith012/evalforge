@@ -1,0 +1,15 @@
+schema_version = "1.0"
+
+[run]
+io_mode = "full"
+
+[dataset]
+path = "dataset.jsonl"
+
+[target]
+callable = "baseline_bot:answer"
+name = "baseline-bot-synthetic"
+
+[[evaluators]]
+name = "exact"
+type = "exact_match"

@@ -145,3 +145,15 @@ def load_custom_evaluator(reference: str, *, name: str) -> LoadedCustomEvaluator
         requires_expected=requires_expected,
         call=cast(Callable[[Case, JSONValue, float], object], evaluate),
     )
+
+
+class CustomEvaluator:
+    """Namespace for loading custom evaluators by reference (API_DESIGN §5). Trusted code."""
+
+    @classmethod
+    def from_reference(cls, reference: str, *, name: str) -> LoadedCustomEvaluator:
+        """Import ``module:attribute`` and wrap it.
+
+        Raises ``EVALUATOR_LOAD_FAILED`` on any problem.
+        """
+        return load_custom_evaluator(reference, name=name)

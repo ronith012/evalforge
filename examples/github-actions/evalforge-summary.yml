@@ -1,0 +1,39 @@
+# Copyright YEAR_OF_INITIAL_PUBLICATION Bodepudi Ronith
+# SPDX-License-Identifier: Apache-2.0
+#
+# Example for your own repository (OD-23): evaluate, compare with the last baseline, and upload SUMMARIES only.
+# Case inputs and outputs (cases.jsonl) are never uploaded. Review what your runs store before you enable this
+# in a project with sensitive data (io_mode = "none" or "hashes" stores less).
+#
+# Status: an example. Not run by this repository. The action versions below were not re-checked for this file.
+name: evalforge
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  evaluate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.13.6"
+      - name: Install EvalForge from a pinned source
+        run: uv tool install --from "evalforge @ git+https://github.com/OWNER/REPO@COMMIT_SHA" evalforge
+      - name: Run the configured evaluation
+        run: evalforge run --config evalforge.toml --format json --fail-on error > run.json
+      - name: Keep summaries only
+        run: |
+          mkdir -p summaries
+          RUN_ID=$(python3 -c "import json; print(json.load(open('run.json'))['run_id'])")
+          cp ".evalforge/runs/${RUN_ID}/summary.json" "summaries/${RUN_ID}-summary.json"
+          cp ".evalforge/runs/${RUN_ID}/manifest.json" "summaries/${RUN_ID}-manifest.json"
+      - name: Upload summaries (no case content)
+        uses: actions/upload-artifact@v4
+        with:
+          name: evalforge-summaries
+          path: summaries/

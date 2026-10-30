@@ -324,10 +324,18 @@ the milestone's completion record before the next milestone starts.
 | M1 Project foundation | Complete | Approved 2026-10-27 | docs/MILESTONE_1_RECORD.md | Yes (4a144a1) |
 | M2 Data models and validation | Complete | Approved 2026-10-27, deviations accepted | docs/MILESTONE_2_RECORD.md | Yes (4a144a1) |
 | M3 Dataset loading | Complete | Approved 2026-10-27, decisions 1–4 accepted | docs/MILESTONE_3_RECORD.md | Yes (4a144a1) |
-| M4 Target interface | Complete | Approved 2026-10-27, decisions 1–3 accepted | docs/MILESTONE_4_RECORD.md | **No** (pending instruction) |
-| M5 Deterministic evaluators and registry | Complete | Approved by "proceed" 2026-10-27; D-7 still open | docs/MILESTONE_5_RECORD.md | No |
-| M6 Evaluation runner | Complete | Approved 2026-10-27; D-11 and interruption decision confirmed | docs/MILESTONE_6_RECORD.md | No |
-| M7 Normalisation and persistence | Complete | Pending approval; six owner-decision defaults need confirming | docs/MILESTONE_7_RECORD.md | No |
+| M4 Target interface | Complete | Approved 2026-10-27, decisions 1–3 accepted | docs/MILESTONE_4_RECORD.md | Yes (1fc4789) |
+| M5 Deterministic evaluators and registry | Complete | Approved by "proceed" 2026-10-27; D-7 proposed resolution recorded 2026-10-30 (see MILESTONE_5_RECORD) | docs/MILESTONE_5_RECORD.md | Yes (8b9eb1b) |
+| M6 Evaluation runner | Complete | Approved 2026-10-27; D-11 and interruption decision confirmed | docs/MILESTONE_6_RECORD.md | Yes (8b9eb1b) |
+| M7 Normalisation and persistence | Complete | Approved 2026-10-30: six owner-decision defaults confirmed (OD-11, OD-12, OD-21, OD-22, OD-27, OD-30) | docs/MILESTONE_7_RECORD.md | Yes (8b9eb1b, with M5-M6) |
+| M8 Reporting | Complete | Approved 2026-10-27; OD-18 approved, D-12 confirmed | docs/MILESTONE_8_RECORD.md | No |
+| M9 Run comparison | Complete | Approved 2026-10-30: OD-13 and OD-28 confirmed | docs/MILESTONE_9_RECORD.md | No |
+| M10 Regression detection | Complete | Approved 2026-10-30: OD-08 defaults confirmed | docs/MILESTONE_10_RECORD.md | No |
+| M11 CLI and Python API | Complete | Approved 2026-10-30: OD-25 and OD-26 confirmed; deferred items built (progress lines, object API, comparison text export) | docs/MILESTONE_11_RECORD.md | No |
+| M13 Security hardening | Complete (local) | Verification matrix, static and network checks, regex guard, audit run (pip-audit, no known vulnerabilities). Secret scan (gitleaks) not run: download blocked; pending owner permission. Residual risks presented, not accepted. | docs/MILESTONE_13_RECORD.md | No |
+| M14 Integration and end-to-end tests | Complete (local) | Quick start, seeded regression pair, traceability register, documentation checks. Linked gaps listed in the record. | docs/MILESTONE_14_RECORD.md | No |
+| M15 Packaging and documentation | Complete (local); CI not run | Docs, CI workflow with audit, build, DCO and secret-scan jobs, governance files, example workflow. Nothing run on GitHub. | docs/MILESTONE_15_RECORD.md | No |
+| M16 Release readiness | Stopped for approval | Checklist, risks, and decision request written. Not published. Gate G-2 and OD-01 remain open. | docs/MILESTONE_16_RECORD.md | No |
 
 Test status at M4 approval: 194 tests pass on Python 3.11, 3.12, and 3.13 (macOS). Lint and strict type checks pass.
 

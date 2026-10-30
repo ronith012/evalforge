@@ -25,9 +25,13 @@ classifiers = [
 # Zero third-party runtime dependencies (TRD §3.2; OD-15).
 dependencies = []
 
+[project.scripts]
+evalforge = "evalforge.cli:main"
+
 [dependency-groups]
 dev = [
     "mypy>=2.4.0,<3",
+    "pip-audit>=2.10.1,<3",
     "pytest>=9.1.1,<10",
     "ruff>=0.17.3,<0.18",
 ]

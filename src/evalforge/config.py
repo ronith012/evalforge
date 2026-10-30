@@ -395,6 +395,13 @@ def _evaluator_params(
     return params
 
 
+# A group that contains a repeat and is itself repeated, for example "(a+)+" or "(\\w*)*". Such
+# patterns can take exponential time on inputs of a few dozen characters (SECURITY §7; RR-03).
+# The check is a conservative heuristic. It does not catch every slow pattern, such as overlapping
+# alternations, so it is a partial mitigation and is documented as one.
+_NESTED_REPEAT_RE: Final = re.compile(r"\([^()]*[+*][^()]*\)(?:[+*?]|\{\d*,?\d*\})")
+
+
 def _regex_problem(pattern: str) -> str | None:
     if len(pattern) > limits.MAX_REGEX_CHARS:
         return f"pattern exceeds {limits.MAX_REGEX_CHARS} characters."
@@ -402,6 +409,10 @@ def _regex_problem(pattern: str) -> str | None:
         re.compile(pattern)
     except re.error as exc:
         return f"invalid regular expression: {exc.msg}."
+    if _NESTED_REPEAT_RE.search(pattern) is not None:
+        return (
+            "a repeated group contains a repeat; this can be very slow (see docs/REGEX_REVIEW.md)."
+        )
     return None
 
 

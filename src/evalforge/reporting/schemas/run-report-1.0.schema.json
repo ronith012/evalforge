@@ -1,0 +1,84 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "run-report-1.0.schema.json",
+  "title": "EvalForge run report",
+  "description": "A run report exported by EvalForge. Case content appears only when the source run stored io_mode full and the export was requested with content.",
+  "type": "object",
+  "required": ["schema_version", "report_type", "run_id", "status", "integrity", "io_mode", "redaction", "dataset", "counts", "summary", "footer", "cases"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "report_type": {"const": "run"},
+    "run_id": {"type": "string", "minLength": 1},
+    "status": {"enum": ["RUNNING", "COMPLETED", "ABORTED", "FAILED"]},
+    "integrity": {
+      "type": "object",
+      "required": ["ok", "problems"],
+      "additionalProperties": false,
+      "properties": {
+        "ok": {"type": "boolean"},
+        "problems": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "io_mode": {"enum": ["full", "hashes", "none"]},
+    "redaction": {"type": "boolean"},
+    "dataset": {
+      "type": "object",
+      "required": ["source_label", "format", "canonical_sha256", "case_count"],
+      "additionalProperties": false,
+      "properties": {
+        "source_label": {"type": "string"},
+        "format": {"enum": ["json", "jsonl"]},
+        "canonical_sha256": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+        "case_count": {"type": "integer", "minimum": 0}
+      }
+    },
+    "counts": {
+      "type": ["object", "null"],
+      "required": ["PASS", "FAIL", "ERROR", "SKIPPED", "INCONCLUSIVE"],
+      "additionalProperties": false,
+      "properties": {
+        "PASS": {"type": "integer", "minimum": 0},
+        "FAIL": {"type": "integer", "minimum": 0},
+        "ERROR": {"type": "integer", "minimum": 0},
+        "SKIPPED": {"type": "integer", "minimum": 0},
+        "INCONCLUSIVE": {"type": "integer", "minimum": 0}
+      }
+    },
+    "summary": {"type": ["object", "null"]},
+    "footer": {"type": "string", "minLength": 1},
+    "cases": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["case_id", "status", "target_status", "evaluators"],
+        "additionalProperties": false,
+        "properties": {
+          "case_id": {"type": "string", "minLength": 1},
+          "status": {"enum": ["PASS", "FAIL", "ERROR", "SKIPPED", "INCONCLUSIVE"]},
+          "status_reason": {"type": ["string", "null"]},
+          "target_status": {"enum": ["OK", "ERROR", "NOT_RUN"]},
+          "error_code": {"type": ["string", "null"]},
+          "evaluators": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["name", "status", "reason_code"],
+              "additionalProperties": false,
+              "properties": {
+                "name": {"type": "string"},
+                "status": {"enum": ["PASS", "FAIL", "ERROR", "SKIPPED", "INCONCLUSIVE"]},
+                "reason_code": {"type": ["string", "null"]},
+                "message": {"type": "string"},
+                "details": {"type": "object"}
+              }
+            }
+          },
+          "input": {},
+          "expected": {},
+          "output": {}
+        }
+      }
+    }
+  }
+}
